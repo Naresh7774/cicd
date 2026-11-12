@@ -87,3 +87,31 @@ resource "aws_security_group" "main" {
     }
   )
 }
+
+resource "aws_route53_record" "jenkins" {
+  zone_id = var.zone_id
+  name    = "jenkins.${var.zone_name}"
+  type    = "A"
+  ttl     = 1
+  records = [aws_instance.jenkins.public_ip]
+  allow_overwrite = true
+}
+
+resource "aws_route53_record" "sonar" {
+  count = var.sonar ? 1 : 0
+  zone_id = var.zone_id
+  name    = "sonar.${var.zone_name}"
+  type    = "A"
+  ttl     = 1
+  records = [aws_instance.sonar[0].public_ip]
+  allow_overwrite = true
+}
+
+resource "aws_route53_record" "jenkins-agent" {
+  zone_id = var.zone_id
+  name    = "jenkins-agent.${var.zone_name}"
+  type    = "A"
+  ttl     = 1
+  records = [aws_instance.jenkins_agent.private_ip]
+  allow_overwrite = true
+}
